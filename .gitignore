@@ -43,3 +43,7 @@ Thumbs.db
 
 # Agent scratch files
 scratch/
+
+# External reference AGENTS files
+*-AGENTS.md
+!AGENTS.md
