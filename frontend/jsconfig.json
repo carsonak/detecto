@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "checkJs": true,
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
+    "target": "ES2022",
+    "noEmit": true
+  },
+  "include": ["src/**/*"]
+}
