@@ -43,18 +43,23 @@ For multi-file plans, `overview.md` is the single entrypoint and must provide:
 Coordination Gates are formal synchronization checkpoints designed to decouple complex or multi-developer tasks, allowing parallel execution without risking architectural drift, merge conflicts, or interface mismatches.
 
 ### 3.1 Purpose & Core Mechanics
+
 In multi-developer and agent-assisted workflows, work often splits into separate domains (e.g. backend vs. frontend, or feature slice A vs. feature slice B). Rather than enforcing lockstep synchronization on every line of code, **Coordination Gates** define explicit synchronization milestones:
+
 - **Decoupled Velocity**: Teams work concurrently and independently between gates using agreed-upon mocks and frozen data contracts.
 - **Controlled Integration**: Heavy synchronization or irreversible merges occur only when passing a designated gate.
 - **Explicit Blockers**: If a prerequisite gate is not yet cleared, dependent downstream tasks remain paused, preventing premature integration attempts.
 
 ### 3.2 Anatomy of a Coordination Gate
+
 Every gate defined in an `overview.md` plan must specify three elements:
+
 1. **Entry Criteria (Prerequisites)**: The verifiable state or completed deliverables required before entering the gate (e.g., scaffolding passes checks, contracts signed off, unit test suites pass).
 2. **Unblocked Parallel Work**: The tasks that can safely be executed simultaneously once the gate is active without cross-developer interference.
 3. **Exit Criteria (Clearing the Gate)**: Concrete automated tests, build confirmations, or manual verifications required to declare the gate passed.
 
 ### 3.3 Gate Progression in Task Plans
+
 The specific gate sequence, dependency flowcharts, and milestone statuses are documented in each task's `overview.md` file. As developers and agents complete work, gate transitions must be reflected in the consolidated progress dashboard.
 
 ---

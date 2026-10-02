@@ -9,6 +9,7 @@ Real-time person detection and crowd analytics system with a FastAPI backend and
 **Detecto** is an automated computer vision and safety monitoring platform designed for real-world spaces such as entrances, classrooms, warehouses, and transit hubs. The system allows operators and safety analysts to upload image frames or video feeds, perform automated real-time person detection, visualize bounding boxes with confidence scores, and analyze crowd density trends over time.
 
 ### Key Capabilities
+
 - **Real-Time Person Detection**: Pretrained YOLOv8 computer vision model optimized for high-accuracy person detection.
 - **Interactive Visual Overlays**: Scaled bounding box canvas with dynamic confidence badges and latency indicators.
 - **Historical Crowd Analytics**: Persistent event logging with SQLite, interactive time-series trend graphs, and query filters (date range, confidence threshold).
@@ -42,45 +43,56 @@ Real-time person detection and crowd analytics system with a FastAPI backend and
 ## 3. Quick Start & Setup Instructions
 
 ### Prerequisites
+
 - **Python**: Version 3.12+
 - **Node.js**: Version 18+ (tested on Node v22)
 - **Package Managers**: `pip` and `npm`
 
 ### 3.1 Backend Setup (FastAPI)
 
-1. Navigate to the repository root:
-   ```bash
-   cd detecto
-   ```
-2. Create and activate a Python virtual environment:
+From the repository root:
+
+1. Create and activate a Python virtual environment:
+
    ```bash
    python3 -m venv .venv
    source .venv/bin/activate
    ```
-3. Install backend dependencies:
+
+2. Install backend dependencies:
+
    ```bash
    pip install -r requirements.txt
    ```
-4. Start the FastAPI development server:
+
+3. Start the FastAPI development server:
+
    ```bash
    uvicorn backend.main:app --reload --port 8000
    ```
+
    The backend API will be available at `http://localhost:8000`. Interactive OpenAPI documentation is accessible at `http://localhost:8000/docs`.
 
 ### 3.2 Frontend Setup (React / Vite)
 
 1. In a separate terminal, navigate to `frontend/`:
+
    ```bash
    cd frontend
    ```
+
 2. Install npm dependencies:
+
    ```bash
    npm install
    ```
+
 3. Start the Vite development server:
+
    ```bash
    npm run dev
    ```
+
    Open your browser at `http://localhost:3000`. The Vite server automatically proxies `/api` calls to `http://localhost:8000`.
 
 ---
@@ -88,21 +100,27 @@ Real-time person detection and crowd analytics system with a FastAPI backend and
 ## 4. Verification & Testing
 
 ### Backend Tests
+
 Execute automated unit and route tests:
+
 ```bash
 # From repository root
 pytest backend/tests -v
 ```
 
 ### Frontend Typechecking (JSDoc Static Safety)
+
 Verify JSDoc type annotations across components without compiling:
+
 ```bash
 cd frontend
 npm run typecheck
 ```
 
 ### Frontend Production Build
+
 Validate CSS Modules and production bundling:
+
 ```bash
 cd frontend
 npm run build
@@ -172,12 +190,12 @@ detecto/
 
 The detection pipeline is evaluated against the 5 project targets across 10 test frames:
 
-| Metric | Target | Formula / Measurement Method |
-|---|---|---|
-| **Detection Accuracy** | ≥ 85% | `(Correct detections ÷ Total visible persons) × 100%` |
-| **False Positives** | ≤ 10% | `(Non-person detections ÷ Total detections) × 100%` |
+| Metric                     | Target | Formula / Measurement Method                                 |
+| -------------------------- | ------ | ------------------------------------------------------------ |
+| **Detection Accuracy**     | ≥ 85%  | `(Correct detections ÷ Total visible persons) × 100%`        |
+| **False Positives**        | ≤ 10%  | `(Non-person detections ÷ Total detections) × 100%`          |
 | **Average Inference Time** | ≤ 1.5s | Mean processing time across 10 test frames on local hardware |
-| **Average Confidence** | ≥ 0.70 | Mean confidence score for valid person detections |
-| **System Reliability** | 100% | Process all 10+ test images without unhandled crashes |
+| **Average Confidence**     | ≥ 0.70 | Mean confidence score for valid person detections            |
+| **System Reliability**     | 100%   | Process all 10+ test images without unhandled crashes        |
 
-*Note: Actual benchmark numbers, test case failure analysis, and UI screenshots will be documented in this section upon completion of Milestone 3.*
+_Note: Actual benchmark numbers, test case failure analysis, and UI screenshots will be documented in this section upon completion of Milestone 3._

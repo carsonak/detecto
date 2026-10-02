@@ -118,12 +118,14 @@ Every model and detection pipeline contribution must uphold the project evaluati
 Adapted from robust open-source principles (e.g. `paykit-AGENTS.md`), all code contributions must uphold rigorous symbol documentation and static typing standards.
 
 ### 7.1 Consumer-Centric Purpose & Scope
+
 - **Purpose & Intent**: Every exported class, function, API route, React component, custom hook, and data model must include structured documentation.
 - **Consumer-Centric Focus**: Comments and docstrings must clearly explain **what** the symbol does, **when** to use it, and **how** to use it without exposing callers to internal mechanics. The intent is to clearly expose public capability.
 - **Side Effects & Usage Concerns**: Any side effects that directly affect callers (persisting records to SQLite, making network calls, mutating state, or acquiring locks) must be explicitly disclosed in the doc comments.
 - **Internal Implementation Comments**: Algorithmic choices, math formulas, and internal branch logic belong inside function bodies as regular inline comments (`# ...` or `// ...`), never in public symbol docstrings.
 
 ### 7.2 Python Documentation & Type Annotations
+
 - All Python functions, methods, and route handlers must use native PEP 484 type annotations for parameters and return types.
 - Follow PEP 257 docstring conventions (triple double-quotes `"""..."""`):
   - 1-line summary imperative sentence.
@@ -132,10 +134,11 @@ Adapted from robust open-source principles (e.g. `paykit-AGENTS.md`), all code c
   - `Raises:` block detailing any `HTTPException` or custom errors.
 
 ### 7.3 JavaScript / React JSDoc Type Safety & CLI Verification
+
 To achieve static typing confidence without TypeScript transpilation overhead:
+
 - Annotate components, props, and utility functions using standard JSDoc comments (`/** ... */`).
 - Define shared data structures using `@typedef` tags (e.g. `Detection`, `DetectionRecord`, `BoundingBox`).
 - Document component props with `@param {PropsType} props`.
 - Document function return types with `@returns {Type}`.
 - Run static type checks in CLI using `npm run typecheck` (`tsc --noEmit` via `frontend/jsconfig.json`). All PRs and commits must pass cleanly without type errors.
-
