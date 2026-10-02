@@ -1,0 +1,91 @@
+.viewContainer {
+  padding: 24px;
+  max-width: 1040px;
+  margin: 0 auto;
+}
+
+.header {
+  margin-bottom: 24px;
+}
+
+.title {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: #1a202c;
+}
+
+.subtitle {
+  margin: 6px 0 0;
+  color: #4a5568;
+  font-size: 14px;
+}
+
+.layoutGrid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .layoutGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.actionRow {
+  margin-top: 16px;
+  display: flex;
+  gap: 12px;
+}
+
+.primaryButton {
+  padding: 10px 20px;
+  background-color: #3182ce;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.primaryButton:hover {
+  background-color: #2b6cb0;
+}
+
+.statsPanel {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.statsTitle {
+  margin: 0 0 16px;
+  font-size: 16px;
+  font-weight: 600;
+  color: #2d3748;
+}
+
+.statsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 14px;
+  color: #4a5568;
+}
+
+.statsItem {
+  padding: 10px 0;
+  border-bottom: 1px solid #edf2f7;
+  display: flex;
+  justify-content: space-between;
+}
+
+.statsItemLast {
+  padding: 10px 0 0;
+  display: flex;
+  justify-content: space-between;
+}

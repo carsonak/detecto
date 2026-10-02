@@ -1,0 +1,78 @@
+.appContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.navbar {
+  background-color: #1a202c;
+  color: #fff;
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+}
+
+.brandGroup {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.brandLogo {
+  font-size: 20px;
+  font-weight: bold;
+  color: #63b3ed;
+}
+
+.brandSubtitle {
+  font-size: 12px;
+  color: #a0aec0;
+  padding-left: 8px;
+  border-left: 1px solid #4a5568;
+}
+
+.navLinks {
+  display: flex;
+  gap: 8px;
+}
+
+.navButton {
+  padding: 8px 16px;
+  background-color: transparent;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 400;
+  transition: background-color 0.15s ease-in-out;
+}
+
+.navButton:hover {
+  background-color: #2d3748;
+}
+
+.navButtonActive {
+  padding: 8px 16px;
+  background-color: #2b6cb0;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.mainContent {
+  flex: 1;
+  background-color: #f7fafc;
+}
+
+.footer {
+  text-align: center;
+  padding: 12px 24px;
+  font-size: 12px;
+  color: #718096;
+  border-top: 1px solid #e2e8f0;
+  background-color: #fff;
+}
