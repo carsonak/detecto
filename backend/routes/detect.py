@@ -36,15 +36,24 @@ def get_model() -> YOLO:
     return _model
 
 
+class BoundingBox(BaseModel):
+    """Normalized rectangle in the plan contract's named-key form."""
+
+    ymin: float
+    xmin: float
+    ymax: float
+    xmax: float
+
+
 class Detection(BaseModel):
     """A single person detection.
 
-    ``box`` is normalized ``[x1, y1, x2, y2]``; ``bbox_ymin_xmin_ymax_xmax`` is
-    the same rectangle reordered as ``[ymin, xmin, ymax, xmax]`` per the plan.
+    ``box`` is normalized ``[x1, y1, x2, y2]``; ``bbox`` is the same rectangle
+    as named keys per the frozen plan contract (overview.md 4.1).
     """
 
     box: list[float]
-    bbox_ymin_xmin_ymax_xmax: list[float]
+    bbox: BoundingBox
     label: str = "person"
     confidence: float
 
@@ -118,12 +127,12 @@ async def detect_persons(file: UploadFile = File(...)) -> DetectionResponse:
             detections.append(
                 Detection(
                     box=normalized_xyxy,
-                    bbox_ymin_xmin_ymax_xmax=[
-                        normalized_xyxy[1],
-                        normalized_xyxy[0],
-                        normalized_xyxy[3],
-                        normalized_xyxy[2],
-                    ],
+                    bbox=BoundingBox(
+                        ymin=normalized_xyxy[1],
+                        xmin=normalized_xyxy[0],
+                        ymax=normalized_xyxy[3],
+                        xmax=normalized_xyxy[2],
+                    ),
                     confidence=float(confidence),
                 )
             )
