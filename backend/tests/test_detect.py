@@ -69,3 +69,31 @@ def test_detect_valid(client):
     assert isinstance(payload["detections"], list)
     assert isinstance(payload["avg_confidence"], float)
     assert payload["inference_time_ms"] > 0
+
+
+@requires_backend
+@pytest.mark.skipif(
+    importlib.util.find_spec("ultralytics") is None,
+    reason="ultralytics not installed",
+)
+@pytest.mark.skipif(not SAMPLE_FRAME.exists(), reason=f"missing sample image: {SAMPLE_FRAME}")
+def test_detect_valid_base64_json(client):
+    """Verify /detect supports base64 encoded JSON payload."""
+    import base64
+
+    with SAMPLE_FRAME.open("rb") as frame:
+        b64_content = base64.b64encode(frame.read()).decode("utf-8")
+
+    response = client.post(
+        "/detect",
+        json={"image": f"data:image/jpeg;base64,{b64_content}", "image_name": "frame1.jpg"},
+    )
+    assert response.status_code == 200
+    payload = response.json()
+    assert payload["count"] >= 0
+    assert "detections" in payload
+
+    # Verify image_name was persisted to history
+    history = client.get("/history").json()
+    assert len(history) > 0
+    assert history[0]["image_name"] == "frame1.jpg"
