@@ -3,13 +3,20 @@
 import base64
 from typing import Any, Sequence
 
-import cv2
-import numpy as np
+try:
+    import cv2
+except ImportError:
+    cv2 = None
+
+try:
+    import numpy as np
+except ImportError:
+    np = None
 
 BASE64_PREFIX = "data:image/jpeg;base64,"
 
 
-def decode_image(data: bytes) -> np.ndarray:
+def decode_image(data: bytes) -> Any:
     """Decode raw bytes into a BGR image array.
 
     Args:
@@ -19,8 +26,11 @@ def decode_image(data: bytes) -> np.ndarray:
         The decoded image as an ``np.ndarray`` in BGR channel order.
 
     Raises:
+        RuntimeError: If cv2 or numpy is unavailable.
         ValueError: If the bytes cannot be decoded as an image.
     """
+    if cv2 is None or np is None:
+        raise RuntimeError("OpenCV (cv2) or numpy is not installed in the current environment")
     buffer = np.frombuffer(data, dtype=np.uint8)
     image = cv2.imdecode(buffer, cv2.IMREAD_COLOR)
     if image is None:
@@ -28,7 +38,7 @@ def decode_image(data: bytes) -> np.ndarray:
     return image
 
 
-def preprocess_frame(img: np.ndarray, size: int = 640) -> np.ndarray:
+def preprocess_frame(img: Any, size: int = 640) -> Any:
     """Resize a frame to the model input size.
 
     Args:
@@ -38,10 +48,12 @@ def preprocess_frame(img: np.ndarray, size: int = 640) -> np.ndarray:
     Returns:
         The resized BGR image; YOLO handles normalization internally.
     """
+    if cv2 is None:
+        raise RuntimeError("OpenCV (cv2) is not installed in the current environment")
     return cv2.resize(img, (size, size), interpolation=cv2.INTER_LINEAR)
 
 
-def encode_image_base64(img: np.ndarray) -> str:
+def encode_image_base64(img: Any) -> str:
     """Encode a BGR image as a base64 data URI.
 
     Args:
@@ -50,13 +62,15 @@ def encode_image_base64(img: np.ndarray) -> str:
     Returns:
         A JPEG data URI prefixed with ``data:image/jpeg;base64,``.
     """
+    if cv2 is None:
+        raise RuntimeError("OpenCV (cv2) is not installed in the current environment")
     success, encoded = cv2.imencode(".jpg", img)
     if not success:
         raise ValueError("Failed to encode image as JPEG")
     return BASE64_PREFIX + base64.b64encode(encoded.tobytes()).decode("utf-8")
 
 
-def draw_boxes(img: np.ndarray, detections: Sequence[Any]) -> np.ndarray:
+def draw_boxes(img: Any, detections: Sequence[Any]) -> Any:
     """Draw red person rectangles with confidence labels onto a copy of the image.
 
     Args:

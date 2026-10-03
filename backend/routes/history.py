@@ -15,7 +15,7 @@ async def get_history(
     min_confidence: Optional[float] = Query(default=None, ge=0.0, le=1.0),
     start_date: Optional[str] = Query(default=None),
     end_date: Optional[str] = Query(default=None),
-):
+) -> list[dict]:
     """Retrieve past detection records, newest first, with optional filters.
 
     Args:
@@ -25,7 +25,7 @@ async def get_history(
         end_date: Inclusive ISO 8601 upper bound on the timestamp.
 
     Returns:
-        A payload containing the matching record dictionaries.
+        List of matching detection record dictionaries.
     """
     records = query_records(
         limit=limit,
@@ -33,16 +33,22 @@ async def get_history(
         start_date=start_date,
         end_date=end_date,
     )
-    return {"records": records}
+    return records
 
 
 @router.post("/reset")
-async def reset_history():
+async def reset_history() -> dict:
     """Clear all past detection records from storage.
 
     Returns:
-        A payload with ``cleared`` set to true and the number of rows deleted.
+        A payload with status success, message, cleared flag, and count_deleted.
 
     Side effect: deletes every row in the detections table.
     """
-    return {"cleared": True, "count_deleted": clear_records()}
+    count = clear_records()
+    return {
+        "status": "success",
+        "message": "Detection history cleared successfully",
+        "cleared": True,
+        "count_deleted": count,
+    }

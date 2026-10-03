@@ -1,12 +1,14 @@
-"""Detection routes for person inference (Developer 1)."""
-
+import base64
 import time
 from datetime import datetime, timezone
 from typing import Optional
 
-from fastapi import APIRouter, File, HTTPException, UploadFile
+from fastapi import APIRouter, File, HTTPException, Request, UploadFile
 from pydantic import BaseModel
-from ultralytics import YOLO
+try:
+    from ultralytics import YOLO
+except ImportError:
+    YOLO = None
 
 from models.record import insert_record
 from utils.preprocessing import (
@@ -21,16 +23,18 @@ ALLOWED_CONTENT_TYPES = {"image/jpeg", "image/jpg", "image/png"}
 CONFIDENCE_THRESHOLD = 0.4
 PERSON_CLASS_ID = 0
 
-_model: Optional[YOLO] = None
+_model: Optional[object] = None
 
 
-def get_model() -> YOLO:
+def get_model():
     """Return the process-wide YOLO model, loading weights on first use.
 
     Side effect: downloads ``yolov8n.pt`` into the working directory the first
     time this is called, then caches the instance in a module global.
     """
     global _model
+    if YOLO is None:
+        raise RuntimeError("ultralytics is not installed in the current environment")
     if _model is None:
         _model = YOLO("yolov8n.pt")
     return _model
@@ -75,28 +79,65 @@ class DetectionResponse(BaseModel):
 
 
 @router.post("/detect", response_model=DetectionResponse)
-async def detect_persons(file: UploadFile = File(...)) -> DetectionResponse:
-    """Run person detection on an uploaded image and record the result.
+async def detect_persons(
+    request: Request,
+    file: Optional[UploadFile] = File(default=None),
+) -> DetectionResponse:
+    """Run person detection on an uploaded image or base64 payload and record the result.
+
+    Accepts either multipart/form-data upload or JSON payload with base64 encoded image.
 
     Args:
-        file: Uploaded JPEG or PNG image.
+        request: FastAPI request object.
+        file: Optional uploaded JPEG or PNG image file.
 
     Returns:
         Counts, normalized boxes, mean confidence, latency, and an annotated
         preview image.
 
     Raises:
+        HTTPException: 422 if no image payload is provided.
         HTTPException: 400 for an unsupported content type or undecodable image.
     """
-    if file.content_type not in ALLOWED_CONTENT_TYPES:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Unsupported content type: {file.content_type}. Allowed: image/jpeg, image/png",
-        )
+    image_name: Optional[str] = None
+    payload: bytes = b""
 
-    payload = await file.read()
-    if not payload:
-        raise HTTPException(status_code=400, detail="Uploaded file is empty")
+    content_type = request.headers.get("content-type", "")
+
+    if file is not None and file.filename:
+        if file.content_type not in ALLOWED_CONTENT_TYPES:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Unsupported content type: {file.content_type}. Allowed: image/jpeg, image/png",
+            )
+        payload = await file.read()
+        image_name = file.filename
+        if not payload:
+            raise HTTPException(status_code=400, detail="Uploaded file is empty")
+    elif "application/json" in content_type:
+        try:
+            body = await request.json()
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=f"Invalid JSON payload: {exc}") from exc
+
+        if not isinstance(body, dict) or "image" not in body or not body["image"]:
+            raise HTTPException(status_code=422, detail="Field 'image' is required in JSON payload")
+
+        image_data = body["image"]
+        image_name = body.get("image_name")
+        if "," in image_data and "base64" in image_data:
+            image_data = image_data.split(",", 1)[1]
+
+        try:
+            payload = base64.b64decode(image_data)
+        except Exception as exc:
+            raise HTTPException(status_code=400, detail=f"Invalid base64 encoding: {exc}") from exc
+    else:
+        # No file and not JSON -> unprocessable
+        raise HTTPException(
+            status_code=422,
+            detail="Missing image data. Submit either multipart file upload or JSON with 'image' base64 string.",
+        )
 
     try:
         image = decode_image(payload)
@@ -147,6 +188,7 @@ async def detect_persons(file: UploadFile = File(...)) -> DetectionResponse:
         people_count=len(detections),
         avg_confidence=avg_confidence,
         inference_time_ms=inference_time_ms,
+        image_name=image_name,
     )
 
     return DetectionResponse(

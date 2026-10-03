@@ -3,7 +3,7 @@
 import sqlite3
 from typing import Optional
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 DB_PATH = "detecto.db"
 
@@ -22,9 +22,7 @@ class DetectionRecord(DetectionRecordBase):
     """Full record schema including database ID."""
 
     id: int
-
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 def _connect() -> sqlite3.Connection:
@@ -47,10 +45,16 @@ def init_db() -> None:
                 timestamp TEXT NOT NULL,
                 people_count INTEGER NOT NULL,
                 avg_confidence REAL NOT NULL,
-                inference_time_ms REAL NOT NULL
+                inference_time_ms REAL NOT NULL,
+                image_name TEXT
             )
             """
         )
+        # Handle backward compatibility if table existed prior to adding image_name
+        cursor = connection.execute("PRAGMA table_info(detections)")
+        columns = [row["name"] for row in cursor.fetchall()]
+        if "image_name" not in columns:
+            connection.execute("ALTER TABLE detections ADD COLUMN image_name TEXT")
         connection.commit()
 
 
@@ -59,6 +63,7 @@ def insert_record(
     people_count: int,
     avg_confidence: float,
     inference_time_ms: float,
+    image_name: Optional[str] = None,
 ) -> int:
     """Persist one detection event and return its new row id.
 
@@ -67,6 +72,7 @@ def insert_record(
         people_count: Number of persons detected.
         avg_confidence: Mean confidence across detections (0.0 when none).
         inference_time_ms: Model inference duration in milliseconds.
+        image_name: Optional reference or file name of the processed frame.
 
     Returns:
         The autoincrement id of the inserted row.
@@ -76,9 +82,9 @@ def insert_record(
     with _connect() as connection:
         cursor = connection.execute(
             "INSERT INTO detections "
-            "(timestamp, people_count, avg_confidence, inference_time_ms) "
-            "VALUES (?, ?, ?, ?)",
-            (timestamp, people_count, avg_confidence, inference_time_ms),
+            "(timestamp, people_count, avg_confidence, inference_time_ms, image_name) "
+            "VALUES (?, ?, ?, ?, ?)",
+            (timestamp, people_count, avg_confidence, inference_time_ms, image_name),
         )
         connection.commit()
         return int(cursor.lastrowid)
