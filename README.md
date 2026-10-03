@@ -50,25 +50,29 @@ Real-time person detection and crowd analytics system with a FastAPI backend and
 
 ### 3.1 Backend Setup (FastAPI)
 
-From the repository root:
+1. Navigate to the `backend/` directory:
 
-1. Create and activate a Python virtual environment:
+   ```bash
+   cd backend
+   ```
+
+2. Create and activate a Python virtual environment:
 
    ```bash
    python3 -m venv .venv
    source .venv/bin/activate
    ```
 
-2. Install backend dependencies:
+3. Install backend dependencies:
 
    ```bash
    pip install -r requirements.txt
    ```
 
-3. Start the FastAPI development server:
+4. Start the FastAPI development server:
 
    ```bash
-   uvicorn backend.main:app --reload --port 8000
+   uvicorn main:app --reload --port 8000
    ```
 
    The backend API will be available at `http://localhost:8000`. Interactive OpenAPI documentation is accessible at `http://localhost:8000/docs`.
@@ -93,7 +97,7 @@ From the repository root:
    npm run dev
    ```
 
-   Open your browser at `http://localhost:3000`. The Vite server automatically proxies `/api` calls to `http://localhost:8000`.
+   Open your browser at `http://localhost:5173`. The Vite server automatically proxies `/api` calls to `http://localhost:8000`.
 
 ---
 
@@ -104,8 +108,8 @@ From the repository root:
 Execute automated unit and route tests:
 
 ```bash
-# From repository root
-pytest backend/tests -v
+cd backend
+pytest tests -v
 ```
 
 ### Frontend Typechecking (JSDoc Static Safety)
@@ -142,6 +146,7 @@ detecto/
 │   ├── utils/
 │   │   └── preprocessing.py   # Image decoding & normalization (Dev 1)
 │   ├── samples/               # Backend sample test frames
+│   ├── requirements.txt       # Python backend dependencies
 │   └── tests/
 │       ├── test_health.py     # Health check & route registry tests
 │       ├── test_detect.py     # Detection unit tests (Dev 1)
@@ -168,18 +173,11 @@ detecto/
 │       └── types/
 │           └── css-modules.d.ts         # TypeScript module declaration for CSS
 │
-├── plans/                     # Living multi-developer task coordination suite
-│   ├── README.md              # Plans guide & Coordination Gates protocol
-│   └── 2026-10-01-detecto-coordination/
-│       ├── overview.md        # Gates, data contracts, and progress dashboard
-│       ├── phase-0-scaffolding.md
-│       ├── phase-1-dev1-detection.md
-│       ├── phase-1-dev2-history.md
-│       ├── phase-2-integration.md
-│       └── phase-3-benchmarking.md
+├── plans/                     # Living multi-developer task coordination suite (see plans/README.md)
+│   ├── README.md              # Coordination Gates protocol & directory guide
+│   └── YYYY-MM-DD-<topic>/    # Phase & milestone task specifications
 │
 ├── AGENTS.md                  # Project rules, commit standards, and team protocol
-├── requirements.txt           # Python backend dependencies
 ├── pytest.ini                 # Pytest pythonpath configuration
 └── README.md                  # Project documentation (this file)
 ```
