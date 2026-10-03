@@ -57,12 +57,12 @@ The final `README.md` must include:
 
 ## 5. Progress Tracking Checklist
 
-- [ ] Place 10 sample images into `frontend/public/samples/` and `backend/samples/`.
-- [ ] Run benchmark evaluation script to process all 10 frames and capture metrics.
-- [ ] Populate the benchmark results table with actual recorded data.
+- [x] Place 10 sample images into `frontend/public/samples/` and `backend/samples/`.
+- [x] Run benchmark evaluation script to process all 10 frames and capture metrics.
+- [x] Populate the benchmark results table with actual recorded data.
 - [ ] Capture 2–3 high-resolution UI screenshots.
-- [ ] Author comprehensive `README.md`.
-- [ ] Complete Gate 4 review.
+- [x] Author comprehensive `README.md`.
+- [-] Complete Gate 4 review (metrics recorded, UI screenshots & final remediation in progress).
 
 ---
 
@@ -70,4 +70,6 @@ The final `README.md` must include:
 
 | Date | Type | Description | Status | Resolution / Action |
 |---|---|---|---|---|
-| 2026-10-01 | Planning | Negative test frame (`frame7.jpg` empty room) included to verify 0 false positives in empty scenes. | Open | Essential for false positive rate validation. |
+| 2026-10-01 | Planning | Negative test frame (`frame7.jpg` empty room) included to verify 0 false positives in empty scenes. | Resolved | Verified 0 false positives across all sample frames. |
+| 2026-10-03 | Benchmark | `frame9.jpg` yielded 0 detections due to small scale / lighting. Documented as known limitation. | Resolved | Documented in README.md Section 6. |
+| 2026-10-03 | Documentation | Setup commands in README.md need updating to reflect `cd backend` before running pip / uvicorn / pytest. | Open | Scheduled for update in remediation plan. |

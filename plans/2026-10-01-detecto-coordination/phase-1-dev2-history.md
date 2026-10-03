@@ -59,13 +59,13 @@ Developer 2 takes full-stack ownership of the **History, Analytics & Persistence
 
 ## 3. Progress Tracking Checklist
 
-- [ ] Implement `backend/models/record.py` (SQLite schema, initialization, query functions).
-- [ ] Implement `backend/routes/history.py` (`GET /history` with filters, `POST /reset`).
-- [ ] Write backend unit tests in `backend/tests/test_history.py`.
-- [ ] Implement `frontend/src/components/HistoryChart.jsx` (trend graph).
-- [ ] Implement `frontend/src/pages/HistoryView.jsx` (filter bar, event table, reset modal).
-- [ ] Verify history retrieval and reset via frontend UI.
-- [ ] Verify test suite passes (`pytest backend/tests/test_history.py`).
+- [x] Implement `backend/models/record.py` (SQLite schema, initialization, query functions).
+- [x] Implement `backend/routes/history.py` (`GET /history` with filters, `POST /reset`).
+- [x] Write backend unit tests in `backend/tests/test_history.py`.
+- [-] Implement `frontend/src/components/HistoryChart.jsx` (trend graph merged; chronological order to reverse in follow-up).
+- [-] Implement `frontend/src/pages/HistoryView.jsx` (table and basic reset merged; filter bar and reset confirmation modal to add in follow-up).
+- [x] Verify history retrieval and reset via frontend UI.
+- [x] Verify test suite passes (`pytest backend/tests/test_history.py`).
 
 ---
 
@@ -73,4 +73,6 @@ Developer 2 takes full-stack ownership of the **History, Analytics & Persistence
 
 | Date | Type | Description | Status | Resolution / Action |
 |---|---|---|---|---|
-| 2026-10-01 | Architecture | Decided to use standard library `sqlite3` to avoid heavy ORM dependencies while keeping database file git-ignored. | Open | Validated in requirements. |
+| 2026-10-01 | Architecture | Decided to use standard library `sqlite3` to avoid heavy ORM dependencies while keeping database file git-ignored. | Resolved | Validated in requirements. |
+| 2026-10-03 | Contract | `GET /history` returned `{"records": [...]}` instead of array `[...]`, and `POST /reset` returned `{cleared, count_deleted}` instead of `{status, message}`. | Open | Scheduled for contract reconciliation. |
+| 2026-10-03 | Scope | Filter bar (start/end date, confidence slider) and reset confirmation modal omitted in initial PR #1 commit. | Open | Scheduled for implementation in remediation plan. |

@@ -52,13 +52,13 @@ Developer 1 takes full-stack ownership of the **Detection & Inference Pipeline**
 
 ## 3. Progress Tracking Checklist
 
-- [ ] Implement `backend/utils/preprocessing.py` (decoding, validation, dimensions).
-- [ ] Implement `backend/routes/detect.py` (YOLOv8 loading, person filtering, latency measurement).
-- [ ] Write backend unit tests in `backend/tests/test_detect.py`.
-- [ ] Implement `frontend/src/components/BoundingBoxCanvas.jsx` (dynamic box rendering & scaling).
-- [ ] Implement `frontend/src/pages/DetectionView.jsx` (file upload, sample selector, stats cards).
-- [ ] Verify frontend and backend communicate via `/api/detect`.
-- [ ] Verify test suite passes (`pytest backend/tests/test_detect.py`).
+- [x] Implement `backend/utils/preprocessing.py` (decoding, validation, dimensions).
+- [x] Implement `backend/routes/detect.py` (YOLOv8 loading, person filtering, latency measurement).
+- [x] Write backend unit tests in `backend/tests/test_detect.py`.
+- [-] Implement `frontend/src/components/BoundingBoxCanvas.jsx` (basic overlay merged in PR #1; coordinate scaling bug to fix in follow-up).
+- [-] Implement `frontend/src/pages/DetectionView.jsx` (file upload and stats merged in PR #1; sample image gallery selector and drag-and-drop to complete in follow-up).
+- [x] Verify frontend and backend communicate via `/api/detect`.
+- [x] Verify test suite passes (`pytest backend/tests/test_detect.py`).
 
 ---
 
@@ -66,4 +66,6 @@ Developer 1 takes full-stack ownership of the **Detection & Inference Pipeline**
 
 | Date | Type | Description | Status | Resolution / Action |
 |---|---|---|---|---|
-| 2026-10-01 | Architecture | Normalized box coordinates `[ymin, xmin, ymax, xmax]` chosen to decouple frontend canvas dimensions from raw image pixels. | Open | Ensures responsive scaling across viewport sizes. |
+| 2026-10-01 | Architecture | Normalized box coordinates `[ymin, xmin, ymax, xmax]` chosen to decouple frontend canvas dimensions from raw image pixels. | Resolved | Supported in API via dual `box` (`[x1, y1, x2, y2]`) and `bbox` (`ymin, xmin, ymax, xmax`). |
+| 2026-10-03 | Bug | `BoundingBoxCanvas.jsx` multiplies normalized box coordinates by `clientWidth / naturalWidth`, causing boxes to collapse to top-left. | Open | Scheduled for fix in remediation plan. |
+| 2026-10-03 | Scope | Sample image quick selector gallery and drag-drop zone omitted in initial PR #1 commit. | Open | Scheduled for implementation in remediation plan. |

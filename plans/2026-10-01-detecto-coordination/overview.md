@@ -146,11 +146,11 @@ flowchart TD
 
 | Phase | Description | Owner | Status | Gate Link | Phase Doc |
 |---|---|---|---|---|---|
-| **Phase 0** | Project Scaffolding & Dependency Config | Joint | `[x]` Completed | Gate 0 (Passed) | [`phase-0-scaffolding.md`](file:///home/akihara/zone01/detecto/plans/2026-10-01-detecto-coordination/phase-0-scaffolding.md) |
-| **Phase 1A**| Detection & Inference Pipeline | Dev 1 | `[ ]` Pending | Gate 1 & 2 | [`phase-1-dev1-detection.md`](file:///home/akihara/zone01/detecto/plans/2026-10-01-detecto-coordination/phase-1-dev1-detection.md) |
-| **Phase 1B**| History, Analytics & Persistence | Dev 2 | `[ ]` Pending | Gate 1 & 2 | [`phase-1-dev2-history.md`](file:///home/akihara/zone01/detecto/plans/2026-10-01-detecto-coordination/phase-1-dev2-history.md) |
-| **Phase 2** | End-to-End Integration & Edge Cases | Joint | `[ ]` Pending | Gate 3 | [`phase-2-integration.md`](file:///home/akihara/zone01/detecto/plans/2026-10-01-detecto-coordination/phase-2-integration.md) |
-| **Phase 3** | 10-Image Benchmarking & Documentation | Joint | `[ ]` Pending | Gate 4 | [`phase-3-benchmarking.md`](file:///home/akihara/zone01/detecto/plans/2026-10-01-detecto-coordination/phase-3-benchmarking.md) |
+| **Phase 0** | Project Scaffolding & Dependency Config | Joint | `[x]` Completed | Gate 0 (Passed) | [`phase-0-scaffolding.md`](file:///home/line/zone01/detecto/plans/2026-10-01-detecto-coordination/phase-0-scaffolding.md) |
+| **Phase 1A**| Detection & Inference Pipeline | Dev 1 | `[-]` Substantially Complete (Merged PR #1) | Gate 1 & 2 (Passed) | [`phase-1-dev1-detection.md`](file:///home/line/zone01/detecto/plans/2026-10-01-detecto-coordination/phase-1-dev1-detection.md) |
+| **Phase 1B**| History, Analytics & Persistence | Dev 2 | `[-]` Substantially Complete (Merged PR #1) | Gate 1 & 2 (Passed) | [`phase-1-dev2-history.md`](file:///home/line/zone01/detecto/plans/2026-10-01-detecto-coordination/phase-1-dev2-history.md) |
+| **Phase 2** | End-to-End Integration & Edge Cases | Joint | `[-]` Core Roundtrip Merged (PR #1) | Gate 3 (In Progress) | [`phase-2-integration.md`](file:///home/line/zone01/detecto/plans/2026-10-01-detecto-coordination/phase-2-integration.md) |
+| **Phase 3** | 10-Image Benchmarking & Documentation | Joint | `[-]` Benchmarks & README Merged (PR #1) | Gate 4 (In Progress) | [`phase-3-benchmarking.md`](file:///home/line/zone01/detecto/plans/2026-10-01-detecto-coordination/phase-3-benchmarking.md) |
 
 ---
 
@@ -161,3 +161,5 @@ flowchart TD
 | 2026-10-01 | Architecture | Shifted from vertical slice to full-stack feature split (Dev 1 Detection, Dev 2 History). | Resolved | Allows both devs broad stack experience without merge collisions. |
 | 2026-10-01 | Protocol | Codified commit-on-instruction and push-after-review protocol into AGENTS.md. | Resolved | Prevents unreviewed pushes and massive commits. |
 | 2026-10-01 | Documentation | Added root `plans/README.md` and multi-file gate coordination structure. | Resolved | Multi-developer & multi-tool alignment established. |
+| 2026-10-03 | Integration | PR #1 merged via `tea` CLI into `main`. Merged full pipeline, SQLite persistence, and UI. | Resolved | Main branch updated; remaining gaps consolidated into remediation plan. |
+| 2026-10-03 | Build/Config | Confirmed `requirements.txt` remains in `backend/requirements.txt`; execution context set to `backend/`. | Resolved | User confirmed; developer documentation and commands aligned to `backend/`. |

@@ -11,11 +11,11 @@ Each major feature, epic, or coordination effort lives in its own date-stamped f
 ```text
 plans/
 ├── README.md                           # This guide
-└── YYYY-MM-DD-<task-label>/
-    ├── overview.md                     # High-level architecture, gates, and dashboard
-    ├── phase-0-<name>.md               # Detailed phase breakdown
-    ├── phase-1-<name>.md               # Detailed phase breakdown
-    └── ...
+├── 2026-10-01-detecto-coordination/    # Phase 0-3 architecture, gates & initial sprint
+│   ├── overview.md
+│   └── phase-*.md
+└── 2026-10-03-pipeline-remediation/    # Post-PR#1 bug fixes, contract alignment & completion
+    └── overview.md
 ```
 
 - **Date Format**: `YYYY-MM-DD` (ISO 8601 calendar date).

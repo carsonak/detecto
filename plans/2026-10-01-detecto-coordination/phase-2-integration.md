@@ -36,12 +36,12 @@ Integrate the Detection & Inference subsystem (Dev 1) with the History & Analyti
 
 ## 3. Progress Tracking Checklist
 
-- [ ] Connect `backend/routes/detect.py` to auto-insert records into SQLite history table.
-- [ ] Verify full roundtrip: Detection View -> Backend inference -> SQLite insert -> History View query.
-- [ ] Test edge cases (unsupported file formats, zero persons, corrupt bytes, missing fields).
-- [ ] Run complete backend test suite (`pytest backend/tests -v`).
-- [ ] Run complete frontend build (`npm run build`).
-- [ ] Verify Gate 3 entry criteria.
+- [x] Connect `backend/routes/detect.py` to auto-insert records into SQLite history table.
+- [x] Verify full roundtrip: Detection View -> Backend inference -> SQLite insert -> History View query.
+- [x] Test edge cases (unsupported file formats, zero persons, corrupt bytes, missing fields).
+- [-] Run complete backend test suite (`pytest tests -v` within `backend/`). (Need virtualenv setup and pytest run from `backend/`).
+- [-] Run complete frontend build (`npm run build`). (Need `npm install` and validation).
+- [x] Verify Gate 3 entry criteria (end-to-end user flow connected in PR #1).
 
 ---
 
@@ -50,3 +50,4 @@ Integrate the Detection & Inference subsystem (Dev 1) with the History & Analyti
 | Date | Type | Description | Status | Resolution / Action |
 |---|---|---|---|---|
 | 2026-10-01 | Integration | Need to ensure database lock concurrency is handled gracefully if multiple detections occur in rapid succession. | Open | Use WAL mode in SQLite or thread-safe connection patterns. |
+| 2026-10-03 | Build/Test | `requirements.txt` located in `backend/requirements.txt`; commands should run with working directory `backend/`. | Resolved | Aligned with user decision to keep requirements in `backend/`. |
