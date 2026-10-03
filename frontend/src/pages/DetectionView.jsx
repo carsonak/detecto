@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import BoundingBoxCanvas from '../components/BoundingBoxCanvas';
 import styles from './DetectionView.module.css';
 
@@ -11,29 +11,61 @@ import styles from './DetectionView.module.css';
  * @property {string} [annotated_image] - Data URL of the server-annotated frame.
  */
 
+const SAMPLE_FRAMES = [
+  { name: 'frame1.jpg', label: 'Frame 1', path: '/samples/frame1.jpg' },
+  { name: 'frame2.jpg', label: 'Frame 2', path: '/samples/frame2.jpg' },
+  { name: 'frame3.jpg', label: 'Frame 3', path: '/samples/frame3.jpg' },
+  { name: 'frame4.jpg', label: 'Frame 4', path: '/samples/frame4.jpg' },
+  { name: 'frame5.jpg', label: 'Frame 5', path: '/samples/frame5.jpg' },
+  { name: 'frame6.jpg', label: 'Frame 6', path: '/samples/frame6.jpg' },
+  { name: 'frame7.jpg', label: 'Frame 7', path: '/samples/frame7.jpg' },
+  { name: 'frame8.jpg', label: 'Frame 8', path: '/samples/frame8.jpg' },
+  { name: 'frame9.jpg', label: 'Frame 9', path: '/samples/frame9.jpg' },
+  { name: 'frame10.jpg', label: 'Frame 10', path: '/samples/frame10.jpg' },
+];
+
 /**
- * DetectionView page component for uploading frames, viewing detection overlays,
- * and monitoring per-frame inference metrics.
+ * DetectionView page component for uploading frames, selecting samples, viewing
+ * responsive bounding box overlays, and monitoring inference metrics.
  *
  * @returns {React.ReactElement}
  */
 export default function DetectionView() {
+  const fileInputRef = useRef(/** @type {HTMLInputElement | null} */ (null));
   /** @type {[File | null, React.Dispatch<React.SetStateAction<File | null>>]} */
   const [file, setFile] = useState(null);
   /** @type {[string | null, React.Dispatch<React.SetStateAction<string | null>>]} */
   const [imagePreview, setImagePreview] = useState(null);
+  /** @type {[string | null, React.Dispatch<React.SetStateAction<string | null>>]} */
+  const [selectedSample, setSelectedSample] = useState(null);
   /** @type {[DetectionResult | null, React.Dispatch<React.SetStateAction<DetectionResult | null>>]} */
   const [result, setResult] = useState(null);
   /** @type {[boolean, React.Dispatch<React.SetStateAction<boolean>>]} */
   const [loading, setLoading] = useState(false);
   /** @type {[string | null, React.Dispatch<React.SetStateAction<string | null>>]} */
   const [error, setError] = useState(null);
+  /** @type {[boolean, React.Dispatch<React.SetStateAction<boolean>>]} */
+  const [isDragOver, setIsDragOver] = useState(false);
 
   /**
-   * Reads the selected image into a data URL for instant local preview.
+   * Processes a newly selected or dropped image file.
    *
-   * Discloses side-effect: reads the file via FileReader and replaces any prior result with
-   * new coordinates that no longer match the displayed image.
+   * @param {File} selectedFile
+   * @returns {void}
+   */
+  const processFile = (selectedFile) => {
+    setFile(selectedFile);
+    setResult(null);
+    setError(null);
+
+    const reader = new FileReader();
+    reader.onload = () => setImagePreview(/** @type {string} */ (reader.result));
+    reader.onerror = () => setError('Could not read the selected image file.');
+    reader.readAsDataURL(selectedFile);
+  };
+
+  /**
+   * Handles user file selection from the hidden input.
    *
    * @param {React.ChangeEvent<HTMLInputElement>} event
    * @returns {void}
@@ -43,28 +75,43 @@ export default function DetectionView() {
     if (!selected) {
       return;
     }
+    setSelectedSample(null);
+    processFile(selected);
+  };
 
-    setFile(selected);
+  /**
+   * Selects a sample frame from the bundled test gallery.
+   *
+   * @param {{ name: string, label: string, path: string }} sample
+   * @returns {Promise<void>}
+   */
+  const handleSelectSample = async (sample) => {
+    setSelectedSample(sample.name);
     setResult(null);
     setError(null);
+    setImagePreview(sample.path);
 
-    const reader = new FileReader();
-    reader.onload = () => setImagePreview(/** @type {string} */ (reader.result));
-    reader.onerror = () => setError('Could not read the selected image.');
-    reader.readAsDataURL(selected);
+    try {
+      const response = await fetch(sample.path);
+      const blob = await response.blob();
+      const sampleFile = new File([blob], sample.name, { type: blob.type || 'image/jpeg' });
+      setFile(sampleFile);
+    } catch {
+      setError(`Failed to load sample image: ${sample.name}`);
+    }
   };
 
   /**
    * Uploads the selected image and renders the returned detections.
    *
    * Discloses side-effect: performs an HTTP POST to /api/detect which persists a history
-   * record on the backend.
+   * record on the backend database.
    *
    * @returns {Promise<void>}
    */
   const handleRunDetection = async () => {
     if (!file) {
-      setError('Please select an image file first.');
+      setError('Please select an image file or sample first.');
       return;
     }
 
@@ -93,21 +140,63 @@ export default function DetectionView() {
       <header className={styles.header}>
         <h2 className={styles.title}>Detection View</h2>
         <p className={styles.subtitle}>
-          Upload an image to detect persons with bounding boxes.
+          Upload a custom image or choose from test samples to detect persons with bounding boxes.
         </p>
       </header>
 
+      {/* Sample Gallery Selector */}
+      <section className={styles.sampleSection}>
+        <h3 className={styles.sampleTitle}>Quick Sample Frames</h3>
+        <div className={styles.sampleList}>
+          {SAMPLE_FRAMES.map((sample) => (
+            <button
+              key={sample.name}
+              type="button"
+              className={`${styles.sampleButton} ${selectedSample === sample.name ? styles.sampleButtonActive : ''}`}
+              onClick={() => handleSelectSample(sample)}
+            >
+              <img src={sample.path} alt={sample.label} className={styles.sampleThumbnail} />
+              <div className={styles.sampleName}>{sample.label}</div>
+            </button>
+          ))}
+        </div>
+      </section>
+
       <section className={styles.layoutGrid}>
         <div>
-          <input
-            type="file"
-            accept="image/jpeg,image/png"
-            onChange={handleFileChange}
-            className={styles.fileInput}
-          />
+          {/* Drag & Drop Upload Zone */}
+          <div
+            className={`${styles.dropZone} ${isDragOver ? styles.dropZoneActive : ''}`}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setIsDragOver(true);
+            }}
+            onDragLeave={() => setIsDragOver(false)}
+            onDrop={(e) => {
+              e.preventDefault();
+              setIsDragOver(false);
+              const dropped = e.dataTransfer.files && e.dataTransfer.files[0];
+              if (dropped) {
+                setSelectedSample(null);
+                processFile(dropped);
+              }
+            }}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png"
+              onChange={handleFileChange}
+              className={styles.fileInput}
+            />
+            <p className={styles.dropZonePrompt}>
+              {file ? `Selected: ${file.name}` : 'Drag & drop an image here, or click to browse'}
+            </p>
+          </div>
 
           <BoundingBoxCanvas
-            imageSrc={(result && result.annotated_image) || imagePreview}
+            imageSrc={imagePreview || (result && result.annotated_image) || null}
             detections={(result && result.detections) || []}
           />
 
@@ -121,7 +210,7 @@ export default function DetectionView() {
               type="button"
               className={styles.primaryButton}
               onClick={handleRunDetection}
-              disabled={loading}
+              disabled={loading || !file}
             >
               {loading ? 'Detecting...' : 'Run Person Detection'}
             </button>
@@ -137,7 +226,7 @@ export default function DetectionView() {
             </li>
             <li className={styles.statsItem}>
               <span>Average Confidence:</span>
-              <strong>{result ? result.avg_confidence.toFixed(2) : '--'}</strong>
+              <strong>{result ? `${(result.avg_confidence * 100).toFixed(1)}%` : '--'}</strong>
             </li>
             <li className={styles.statsItemLast}>
               <span>Inference Time:</span>

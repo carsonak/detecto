@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React from 'react';
 import styles from './BoundingBoxCanvas.module.css';
 
 /**
@@ -15,69 +15,48 @@ import styles from './BoundingBoxCanvas.module.css';
  */
 
 /**
- * Renders an image with absolutely-positioned bounding box overlays drawn on top of it.
+ * Renders an image with responsive, absolutely-positioned bounding box overlays drawn on top.
  *
- * Consumes normalized detection coordinates (0-1) from the backend and rescales them to the
- * image's rendered pixel size, so overlays stay aligned at any display width.
+ * Consumes normalized detection coordinates (0-1) from the backend and positions overlays
+ * using CSS percentage coordinates, guaranteeing pixel-perfect alignment at any display size.
  *
  * @param {BoundingBoxCanvasProps} props - `imageSrc` is the image to render (falsy shows a
  * placeholder); `detections` are normalized boxes to overlay.
  * @returns {React.ReactElement} The image with detection overlays, or a placeholder when no image is set.
  */
 export default function BoundingBoxCanvas({ imageSrc = null, detections = [] }) {
-  const imageRef = useRef(/** @type {HTMLImageElement | null} */ (null));
-  const [naturalSize, setNaturalSize] = useState(
-    /** @type {{ width: number, height: number }} */ ({ width: 0, height: 0 })
-  );
-
   if (!imageSrc) {
     return <p className={styles.placeholderText}>No image loaded</p>;
   }
 
-  /**
-   * Captures intrinsic image dimensions once decoded, before any responsive downscale.
-   *
-   * @param {React.SyntheticEvent<HTMLImageElement>} event
-   * @returns {void}
-   */
-  const handleImageLoad = (event) => {
-    const image = event.currentTarget;
-    setNaturalSize({ width: image.naturalWidth, height: image.naturalHeight });
-  };
-
-  // Rendered pixels per normalized unit; guarded until naturalWidth is known.
-  const scaleX = naturalSize.width > 0 ? imageRef.current?.clientWidth / naturalSize.width : 0;
-  const scaleY = naturalSize.height > 0 ? imageRef.current?.clientHeight / naturalSize.height : 0;
-
   return (
-    <div className={styles.canvasContainer} style={{ position: 'relative', display: 'inline-block' }}>
+    <div className={styles.canvasContainer} style={{ position: 'relative', display: 'inline-block', width: '100%' }}>
       <img
-        ref={imageRef}
         src={imageSrc}
         alt="Detection frame"
-        onLoad={handleImageLoad}
-        style={{ display: 'block', width: '100%', height: 'auto' }}
+        style={{ display: 'block', width: '100%', height: 'auto', borderRadius: '4px' }}
       />
 
-      {scaleX > 0 &&
-        scaleY > 0 &&
+      {detections && detections.length > 0 &&
         detections.map((detection, index) => {
-          const [x1, y1, x2, y2] = detection.box;
-          const left = x1 * scaleX;
-          const top = y1 * scaleY;
-          const width = (x2 - x1) * scaleX;
-          const height = (y2 - y1) * scaleY;
+          const box = detection.box || [0, 0, 0, 0];
+          const [x1, y1, x2, y2] = box;
+          const left = `${Math.max(0, Math.min(1, x1)) * 100}%`;
+          const top = `${Math.max(0, Math.min(1, y1)) * 100}%`;
+          const width = `${Math.max(0, Math.min(1, x2 - x1)) * 100}%`;
+          const height = `${Math.max(0, Math.min(1, y2 - y1)) * 100}%`;
+          const confidencePct = (detection.confidence * 100).toFixed(0);
 
           return (
             <div
-              key={`${detection.box.join('-')}-${index}`}
+              key={`${x1}-${y1}-${x2}-${y2}-${index}`}
               style={{
                 position: 'absolute',
-                left: `${left}px`,
-                top: `${top}px`,
-                width: `${width}px`,
-                height: `${height}px`,
-                border: '2px solid red',
+                left,
+                top,
+                width,
+                height,
+                border: '2px solid #ef4444',
                 boxSizing: 'border-box',
                 pointerEvents: 'none',
               }}
@@ -86,16 +65,18 @@ export default function BoundingBoxCanvas({ imageSrc = null, detections = [] }) 
                 style={{
                   position: 'absolute',
                   bottom: '100%',
-                  left: 0,
-                  color: '#fff',
-                  backgroundColor: 'red',
-                  fontSize: '12px',
+                  left: '-2px',
+                  color: '#ffffff',
+                  backgroundColor: '#ef4444',
+                  fontSize: '11px',
+                  fontWeight: 600,
                   lineHeight: '14px',
-                  padding: '0 4px',
+                  padding: '1px 5px',
+                  borderRadius: '3px 3px 0 0',
                   whiteSpace: 'nowrap',
                 }}
               >
-                {`${detection.label || 'person'} ${detection.confidence.toFixed(2)}`}
+                {`${detection.label || 'person'} ${confidencePct}%`}
               </span>
             </div>
           );

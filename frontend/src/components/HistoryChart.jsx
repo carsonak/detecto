@@ -53,12 +53,15 @@ export default function HistoryChart({ records = [] }) {
     return <p className={styles.placeholderText}>No detection events recorded yet</p>;
   }
 
+  // Display records chronologically from left (past) to right (latest)
+  const chronologicalRecords = [...records].reverse();
+
   const chartData = {
-    labels: records.map((record) => formatTimestamp(record.timestamp)),
+    labels: chronologicalRecords.map((record) => formatTimestamp(record.timestamp)),
     datasets: [
       {
         label: 'People Count',
-        data: records.map((record) => record.people_count),
+        data: chronologicalRecords.map((record) => record.people_count),
         borderColor: 'rgb(220, 38, 38)',
         backgroundColor: 'rgba(220, 38, 38, 0.15)',
         tension: 0.25,
